@@ -1,7 +1,9 @@
-from connection import  connection
+from connection import  com
+from connection import sensor
 
-h = connection()
+h = com()
 
 print h.open()
 
-print h.send_cmd('*rv\r')
+print h.sensor.contr_temperature()
+

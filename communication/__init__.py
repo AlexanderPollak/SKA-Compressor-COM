@@ -1,1 +1,2 @@
-from connection import connection
+from connection import com
+from connection import sensor
