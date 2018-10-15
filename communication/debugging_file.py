@@ -5,5 +5,8 @@ h = com()
 
 print h.open()
 
-print h.sensor.contr_temperature()
+print h.sensor.compressor_motor_temperature()
 
+print h.compressor.disable()
+
+print h.compressor.enable()
