@@ -1,5 +1,5 @@
 from connection import  com
-from connection import sensor
+
 
 h = com()
 

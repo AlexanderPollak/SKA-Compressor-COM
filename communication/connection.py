@@ -21,7 +21,8 @@ class com:
 
     def __del__(self):
         ''' Destructor for this class. '''
-        self.close()
+        if self.__port !=0:
+            self.close()
 
 
     def open(self, port='/dev/ttyUSB0', baud=19200):
@@ -271,3 +272,14 @@ class error:
     def __del__(self):
         ''' Destructor for this class. '''
 
+    def read(self):
+        """ Request the error register values of the unit
+                :returns int  """
+        self.__port.write('*ER\r')
+        time.sleep(0.1)
+        rec_str = self.__port.read(1024)
+        p=rec_str.find('*S,')+3
+        if p==2:
+            return 0
+        else:
+            return int(rec_str[p:len(rec_str)],16)
