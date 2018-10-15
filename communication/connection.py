@@ -52,10 +52,27 @@ class com:
         """ Send string via serial connection
                 :param cmd: string which gets send via serial link'
                 :returns answer from controller in string format """
-        self.__port.write(cmd)
-        time.sleep(0.1)
-        return self.__port.read(1024)
+        try:
+            self.__port.write(cmd)
+            time.sleep(0.1)
+            return self.__port.read(1024)
+        except:
+            print"ERROR no communication possible, check if the connection has been opened with open()"
 
+    def read_frimware_version(self):
+        """ Request the sensor value for the controller voltage
+                :returns int  """
+        try:
+            self.__port.write('*RV\r')
+            time.sleep(0.1)
+            rec_str = self.__port.read(1024)
+            p=rec_str.find('*S,')+3
+            if p==2:
+                return 0
+            else:
+                return int(rec_str[p:len(rec_str)])/100.0
+        except:
+            print"ERROR no communication possible, check if the connection has been opened with open()"
 
 
 
