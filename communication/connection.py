@@ -1,21 +1,4 @@
-import serial,time, os
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import serial,time
 
 
 
