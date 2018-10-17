@@ -3,9 +3,22 @@ import serial,time
 
 
 
+class com_error:
+    """This class implements the serial connection error function """
+    def check(self,response):
+
+        self.com_error_name = ['Invalid command', 'Command format incorrect', '<param> format incorrect', '<param> out of range','Sensor status error','Invalid error clear command']
+        self.com_error_value =['*F,01\r','*F,02\r','*F,03\r','*F,04\r','*F,05\r','*F,06\r']
+
+        for i in self.com_error_value:
+            if response == i:
+                print 'ERROR: '+ self.com_error_name[self.com_error_value.index(i)]
+                return
+        print 'Unknown ERROR!'
+        return
 
 
-class com:
+class com(com_error):
     """This class implements the serial connection functions """
     def __init__(self):
         ''' Constructor for this class. '''
@@ -32,6 +45,7 @@ class com:
                 :returns Boolean value True or False """
         self.__port = serial.Serial(port,baud, timeout=0.05)
         self.sensor = sensor(self.__port)
+        self.error = error(self.__port)
         self.compressor = compressor(self.__port, self.__comp_time_disabled)
         return self.__port.is_open
 
@@ -39,6 +53,7 @@ class com:
         """ Close serial port """
         self.__port.close()
         self.sensor.__del__()
+        self.error.__del__()
         self.__comp_time_disabled = self.compressor.__del__()
         try:
             tmp = open('tmp.txt', 'w+')
@@ -69,6 +84,7 @@ class com:
             rec_str = self.__port.read(1024)
             p=rec_str.find('*S,')+3
             if p==2:
+                self.check(rec_str)
                 return 0
             else:
                 return int(rec_str[p:len(rec_str)])/100.0
@@ -77,7 +93,7 @@ class com:
 
 
 
-class sensor:
+class sensor(com_error):
     """This class implements sensor readout functions"""
     def __init__(self,port):
         ''' Constructor for this class. '''
@@ -120,6 +136,7 @@ class sensor:
         rec_str = self.__port.read(1024)
         p=rec_str.find('*S,01:')+6
         if p==5:
+            self.check(rec_str)
             return 0
         else:
             return int(rec_str[p:len(rec_str)])/100.0
@@ -132,6 +149,7 @@ class sensor:
         rec_str = self.__port.read(1024)
         p=rec_str.find('*S,02:')+6
         if p==5:
+            self.check(rec_str)
             return 0
         else:
             return int(rec_str[p:len(rec_str)])/10.0
@@ -144,6 +162,7 @@ class sensor:
         rec_str = self.__port.read(1024)
         p=rec_str.find('*S,03:')+6
         if p==5:
+            self.check(rec_str)
             return 0
         else:
             return int(rec_str[p:len(rec_str)])/10.0
@@ -157,6 +176,7 @@ class sensor:
         rec_str = self.__port.read(1024)
         p=rec_str.find('*S,04:')+6
         if p==5:
+            self.check(rec_str)
             return 0
         else:
             return int(rec_str[p:len(rec_str)])/10.0
@@ -169,6 +189,7 @@ class sensor:
         rec_str = self.__port.read(1024)
         p=rec_str.find('*S,05:')+6
         if p==5:
+            self.check(rec_str)
             return 0
         else:
             return int(rec_str[p:len(rec_str)])/10.0
@@ -181,6 +202,7 @@ class sensor:
         rec_str = self.__port.read(1024)
         p=rec_str.find('*S,06:')+6
         if p==5:
+            self.check(rec_str)
             return 0
         else:
             return int(rec_str[p:len(rec_str)])/10.0
@@ -193,13 +215,14 @@ class sensor:
         rec_str = self.__port.read(1024)
         p = rec_str.find('*S,07:') + 6
         if p == 5:
+            self.check(rec_str)
             return 0
         else:
             return int(rec_str[p:len(rec_str)])/10.0
 
 
 
-class compressor:
+class compressor(com_error):
     """This class implements sensor readout functions"""
     def __init__(self,port,comp_time_disabled):
         ''' Constructor for this class. '''
@@ -220,6 +243,7 @@ class compressor:
         rec_str = self.__port.read(1024)
         p = rec_str.find('*S,') + 3
         if p == 2:
+            self.check(rec_str)
             return 0
         else:
             return int(rec_str[p:len(rec_str)],16)/3600.0
@@ -263,23 +287,52 @@ class compressor:
             return False
 
 
-class error:
+class error(com_error):
     """This class implements error readout functions"""
     def __init__(self,port):
         ''' Constructor for this class. '''
         self.__port=port
+        self.error_list = ['E_Pressure','E_Temperature','E_Overload','E_Surge']
 
     def __del__(self):
         ''' Destructor for this class. '''
 
+
     def read(self):
         """ Request the error register values of the unit
-                :returns int  """
+                :returns int  value of the error register"""
         self.__port.write('*ER\r')
         time.sleep(0.1)
         rec_str = self.__port.read(1024)
         p=rec_str.find('*S,')+3
+        error = int(rec_str[p:len(rec_str)],16)
+
+        for i in range(len(self.error_list)):
+            if error >>(i) & 1 :
+                print 'ERROR: ' + self.error_list[i] +'\n'
+
         if p==2:
+            self.check(rec_str)
             return 0
         else:
+            return int(rec_str[p:len(rec_str)],16)
+
+    def clear(self):
+        """ Request the error register values of the unit
+                :returns int  value of the error register"""
+        self.__port.write('*EC,0000\r')
+        time.sleep(0.1)
+        rec_str = self.__port.read(1024)
+        p=rec_str.find('*S,')+3
+        error = int(rec_str[p:len(rec_str)],16)
+
+        for i in range(len(self.error_list)):
+            if error >>(i) & 1 :
+                print 'ERROR: ' + self.error_list[i] +' could not be cleared!\n'
+
+        if p==2:
+            self.check(rec_str)
+            return 0
+        else:
+            print 'All ERRORs are cleared!'
             return int(rec_str[p:len(rec_str)],16)
