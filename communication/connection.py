@@ -131,10 +131,10 @@ class sensor(com_error):
     def contr_voltage(self):
         """ Request the sensor value for the controller voltage
                 :returns int  """
-        self.__port.write('*SS,01\r')
+        self.__port.write('*SS,00\r')
         time.sleep(0.1)
         rec_str = self.__port.read(1024)
-        p=rec_str.find('*S,01:')+6
+        p=rec_str.find('*S,00:')+6
         if p==5:
             self.check(rec_str)
             return 0
@@ -143,6 +143,19 @@ class sensor(com_error):
 
     def contr_current(self):
         """ Request the sensor value for the controller current
+                :returns int in mA """
+        self.__port.write('*SS,01\r')
+        time.sleep(0.1)
+        rec_str = self.__port.read(1024)
+        p=rec_str.find('*S,01:')+6
+        if p==5:
+            self.check(rec_str)
+            return 0
+        else:
+            return int(rec_str[p:len(rec_str)])/10.0
+
+    def contr_temperature(self):
+        """ Request the sensor value for the controller temperature
                 :returns int in mA """
         self.__port.write('*SS,02\r')
         time.sleep(0.1)
@@ -154,8 +167,9 @@ class sensor(com_error):
         else:
             return int(rec_str[p:len(rec_str)])/10.0
 
-    def contr_temperature(self):
-        """ Request the sensor value for the controller temperature
+
+    def compressor_supply_pressure(self):
+        """ Request the sensor value for the compressor supply pressure
                 :returns int in mA """
         self.__port.write('*SS,03\r')
         time.sleep(0.1)
@@ -167,9 +181,8 @@ class sensor(com_error):
         else:
             return int(rec_str[p:len(rec_str)])/10.0
 
-
-    def compressor_supply_pressure(self):
-        """ Request the sensor value for the compressor supply pressure
+    def compressor_return_pressure(self):
+        """ Request the sensor value for the compressor return pressure
                 :returns int in mA """
         self.__port.write('*SS,04\r')
         time.sleep(0.1)
@@ -181,8 +194,8 @@ class sensor(com_error):
         else:
             return int(rec_str[p:len(rec_str)])/10.0
 
-    def compressor_return_pressure(self):
-        """ Request the sensor value for the compressor return pressure
+    def compressor_motor_temperature(self):
+        """ Request the sensor value for the motor capsule temperature
                 :returns int in mA """
         self.__port.write('*SS,05\r')
         time.sleep(0.1)
@@ -194,26 +207,13 @@ class sensor(com_error):
         else:
             return int(rec_str[p:len(rec_str)])/10.0
 
-    def compressor_motor_temperature(self):
-        """ Request the sensor value for the motor capsule temperature
+    def compressor_supply_temperature(self):
+        """ Request the sensor value for the helium supply temperature
                 :returns int in mA """
         self.__port.write('*SS,06\r')
         time.sleep(0.1)
         rec_str = self.__port.read(1024)
-        p=rec_str.find('*S,06:')+6
-        if p==5:
-            self.check(rec_str)
-            return 0
-        else:
-            return int(rec_str[p:len(rec_str)])/10.0
-
-    def compressor_supply_temperature(self):
-        """ Request the sensor value for the helium supply temperature
-                :returns int in mA """
-        self.__port.write('*SS,07\r')
-        time.sleep(0.1)
-        rec_str = self.__port.read(1024)
-        p = rec_str.find('*S,07:') + 6
+        p = rec_str.find('*S,06:') + 6
         if p == 5:
             self.check(rec_str)
             return 0
