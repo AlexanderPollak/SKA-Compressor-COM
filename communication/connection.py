@@ -47,7 +47,7 @@ class com(com_error):
         self.sensor = sensor(self.__port)
         self.error = error(self.__port)
         self.compressor = compressor(self.__port, self.__comp_time_disabled)
-        return self.__port.is_open
+        return self.__port.isOpen
 
     def close(self):
         """ Close serial port """
@@ -62,7 +62,7 @@ class com(com_error):
             # Store configuration file values
         except:
             print'ERROR in saving the temp file!'
-        return not self.__port.is_open
+        return not self.__port.isOpen
 
     def send_cmd(self,cmd):
         """ Send string via serial connection
