@@ -1,4 +1,4 @@
-import serial,time
+import serial,time,os,csv,datetime
 
 
 
@@ -219,6 +219,43 @@ class sensor(com_error):
             return 0
         else:
             return int(rec_str[p:len(rec_str)])/10.0
+
+    def log_data(self,path='~/monitor/log/', interval_sec=60):
+        """This function runs a while loop which logs the compressor data into a log directory.
+        The log process can be interrupted by a keyboard interrupt.
+        """
+        try:
+            print 'Logging Started'
+
+            while True:
+                Payload = [None] * 7
+                filename = path + '/' + 'Compressor' + str(datetime.date.today()) + '.csv'
+                tmp_check_file = os.path.isfile(filename)
+                csvfile = open(filename, mode='a')
+                name = ['Time', 'contr_voltage', 'contr_current', 'contr_temperature', 'compressor_supply_pressure', 'compressor_return_pressure', 'compressor_motor_temperature', 'compressor_supply_temperature']
+                data_writer = csv.DictWriter(csvfile, fieldnames=name)
+                if not tmp_check_file:
+                    data_writer.writerow({'Time':'Time','contr_voltage':'contr_voltage','contr_current':'contr_current','contr_temperature':'contr_temperature','compressor_supply_pressure':'compressor_supply_pressure','compressor_return_pressure':'compressor_return_pressure','compressor_motor_temperature':'compressor_motor_temperature','compressor_supply_temperature':'compressor_supply_temperature'})
+
+                Payload[0]=self.contr_voltage()
+                Payload[1]=self.contr_current()
+                Payload[2]=self.contr_temperature()
+                Payload[3]=self.compressor_supply_pressure()
+                Payload[4]=self.compressor_return_pressure()
+                Payload[5]=self.compressor_motor_temperature()
+                Payload[6]=self.compressor_supply_temperature()
+
+
+                data_writer.writerow({'Time': str(datetime.datetime.now().hour) + ':' + str(datetime.datetime.now().minute),
+                                      'contr_voltage': Payload[0], 'contr_current': Payload[1], 'contr_temperature': Payload[2],
+                                      'compressor_supply_pressure': Payload[3], 'compressor_return_pressure': Payload[4],
+                                      'compressor_motor_temperature': Payload[5], 'compressor_supply_temperature': Payload[6]})
+                time.sleep(interval_sec)
+        except KeyboardInterrupt:
+            print 'Logging Stopped'
+        return
+
+
 
 
 
