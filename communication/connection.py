@@ -24,7 +24,7 @@ class com(com_error):
         ''' Constructor for this class. '''
         self.__port = 0
         try:
-            tmp = open('tmp.txt', 'r')
+            tmp = open('/tmp/tmp.txt', 'r')
             self.__comp_time_disabled = float(tmp.read())
             tmp.close()
             # Store configuration file values
@@ -229,7 +229,7 @@ class sensor(com_error):
 
             while True:
                 Payload = [None] * 7
-                filename = path  + 'Compressor_' + str(datetime.date.today()) + '.csv'
+                filename = os.path.expanduser(path)  + 'Compressor_' + str(datetime.date.today()) + '.csv'
                 tmp_check_file = os.path.isfile(filename)
                 csvfile = open(filename, mode='a')
                 name = ['Time', 'contr_voltage', 'contr_current', 'contr_temperature', 'compressor_supply_pressure', 'compressor_return_pressure', 'compressor_motor_temperature', 'compressor_supply_temperature']
