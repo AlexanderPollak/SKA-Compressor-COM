@@ -38,9 +38,9 @@ class com(com_error):
             self.close()
 
 
-    def open(self, port='/dev/ttyUSB0', baud=19200):
+    def open(self, port='/dev/ttyr00', baud=19200):
         """ Open serial port for communication
-                :param port: path to serial port. Default='/dev/ttyUSB0'
+                :param port: path to serial port. Default='/dev/ttyr00'
                 :param baud: defines the baud rate. Default=19200
                 :returns Boolean value True or False """
         self.__port = serial.Serial(port,baud, timeout=0.05)
