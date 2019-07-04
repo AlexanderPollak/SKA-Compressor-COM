@@ -229,7 +229,7 @@ class sensor(com_error):
 
             while True:
                 Payload = [None] * 7
-                filename = path + '/' + 'Compressor' + str(datetime.date.today()) + '.csv'
+                filename = path  + 'Compressor' + str(datetime.date.today()) + '.csv'
                 tmp_check_file = os.path.isfile(filename)
                 csvfile = open(filename, mode='a')
                 name = ['Time', 'contr_voltage', 'contr_current', 'contr_temperature', 'compressor_supply_pressure', 'compressor_return_pressure', 'compressor_motor_temperature', 'compressor_supply_temperature']
@@ -250,6 +250,7 @@ class sensor(com_error):
                                       'contr_voltage': Payload[0], 'contr_current': Payload[1], 'contr_temperature': Payload[2],
                                       'compressor_supply_pressure': Payload[3], 'compressor_return_pressure': Payload[4],
                                       'compressor_motor_temperature': Payload[5], 'compressor_supply_temperature': Payload[6]})
+                print str(datetime.datetime.now().hour) + ':' + str(datetime.datetime.now().minute)
                 time.sleep(interval_sec)
         except KeyboardInterrupt:
             print 'Logging Stopped'
