@@ -75,7 +75,7 @@ class com(com_error):
         except:
             print"ERROR no communication possible, check if the connection has been opened with open()"
 
-    def read_frimware_version(self):
+    def read_firmware_version(self):
         """ Request the sensor value for the controller voltage
                 :returns int  """
         try:
@@ -229,7 +229,7 @@ class sensor(com_error):
 
             while True:
                 Payload = [None] * 7
-                filename = path  + 'Compressor' + str(datetime.date.today()) + '.csv'
+                filename = path  + 'Compressor_' + str(datetime.date.today()) + '.csv'
                 tmp_check_file = os.path.isfile(filename)
                 csvfile = open(filename, mode='a')
                 name = ['Time', 'contr_voltage', 'contr_current', 'contr_temperature', 'compressor_supply_pressure', 'compressor_return_pressure', 'compressor_motor_temperature', 'compressor_supply_temperature']
